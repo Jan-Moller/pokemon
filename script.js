@@ -56,19 +56,7 @@ function renderPokemonOverview() {
     for (let i = 0; i < currentPokemonArray.length; i++) {
         const name = currentPokemonArray[i].translated_name_de;
         const types = getPokemonType(currentPokemonArray[i])
-        pokemonRef.innerHTML += /*html*/ `
-    <article class="pokemon_overview_card background_color_${currentPokemonArray[i].type[0]}">
-        <section class="pokemon_overview_card_title">
-            <span class="pokemon_over_card_id"><h2>#${currentPokemonArray[i].id}</h2></span>
-            <span><h2>${name}</h2></span>
-        </section>
-        <section class="pokemon_overview_card_front_content">
-            <div class="pokemon_ovierview_card_front_types">${types}</div>
-            <img class="pokemon_overview_card_pkm_img" src=${currentPokemonArray[i].img_url} alt="Bild eines Pokemons">
-        </section>
-        
-    </article>
-    `
+        pokemonRef.innerHTML += getPokemonOverviewCardTemplate(currentPokemonArray[i].type[0], currentPokemonArray[i].id, name, types, currentPokemonArray[i].img_url, currentPokemonArray[i].height, currentPokemonArray[i].weight, currentPokemonArray[i].base_experience) 
     }
 }
 
@@ -76,7 +64,12 @@ function getPokemonType(currentPokemon) {
     let types = '';
     for (let i = 0; i < currentPokemon.type.length; i++) {
         let type = currentPokemon.type[i];
-        types += `<img class="pokemon_overview_card_typ_img" src="/assets/img/${type}.png" alt="Icon des Pokemontyps">`
+        types += /*html*/ `<img class="pokemon_overview_card_typ_img" src="/assets/img/${type}.png" alt="Icon des Pokemontyps">`
     }
     return types;
+}
+
+function openPokemonDetailView(){
+    let dialog = document.querySelector('dialog')
+    dialog.showModal();
 }
