@@ -15,7 +15,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    align-items: center; 
+    align-items: center;
     border-radius: 50px;
 }
 
@@ -60,7 +60,6 @@
     box-shadow: rgba(255, 255, 255, 0.75) 0px 22px 70px 4px;
 }
 
-
 .flip-card {
     position: relative;
     width: 310px;
@@ -71,9 +70,8 @@
     transform-style: preserve-3d;
     vertical-align: top;
     cursor: pointer;
-     perspective: 1000px;
+    perspective: 1000px;
 }
-
 
 .pokemon_overview_card_front,
 .pokemon_overview_card_back {
@@ -90,10 +88,101 @@
 }
 
 .flip-card:hover {
-  transform: rotateY(180deg);
+    transform: rotateY(180deg);
 }
 
-.pokemon_detailed_card_view{
+.pokemon_detailed_card_view {
     height: 650px;
     width: 400px;
+}
+
+.pokemon_card {
+    height: 100%;
+    width: 100%;
+    color: var(--font-color);
+}
+
+.pokemon_card_header {
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    color: var(--secondary-color);
+}
+
+.pokemon_card_header_headline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pokemon_card_header h2 {
+    margin: 25px;
+}
+
+.pokekom_card_header_id {
+    font-size: 20px;
+    margin: 25px;
+}
+
+.pokemon_card_header img {
+    height: 200px;
+    width: 200px;
+    filter: drop-shadow(0 8px 32px rgba(255, 255, 255));
+    transition: all 0.8s ease-in-out;
+}
+
+.pokemon_card_header img:hover {
+    height: 300px;
+    width: 300px;
+    filter: drop-shadow(0 8px 32px rgba(255, 255, 255));
+    transition: all 0.8s ease-in-out;
+    transform: translateX(20px)
+}
+
+
+.pokekom_card_header_img {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.pokemon_card_navbar {
+    background: #dedfd2;
+    padding: 10px;
+    border-top: 2px solid var(--font-color);
+    border-bottom: 2px solid var(--font-color);
+}
+
+.pokemon_card_navbar nav {
+    display: flex;
+    justify-content: space-evenly;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.pokemon_card_navbar nav h4:hover {
+    text-decoration: underline;
+}
+
+.pokemon_card_content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(650px - 300px - 46px);
+    background: #dedfd2;
+}
+
+.pokemon_card_content_stats{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.pokemon_card_content_stats_info{
+    display: flex;
+    justify-content: space-between;
+    margin:0 75px 0 75px; 
+    font-size: 18px;
 }

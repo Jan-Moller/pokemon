@@ -1,6 +1,6 @@
 function getPokemonOverviewCardTemplate(type, id, name, types, img, height, weight, exp) {
    return /*html*/ `
-    <div class="flip-card" onclick="openPokemonDetailView()">
+    <div class="flip-card" onclick="openPokemonDetailView(${id})">
     <article class="pokemon_overview_card background_color_${type} pokemon_overview_card_front">
         <section class="pokemon_overview_card_title">
             <span class="pokemon_over_card_id"><h2>#${id}</h2></span>
