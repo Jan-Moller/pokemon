@@ -99,7 +99,6 @@ async function getPokemonDetails(id) {
 async function getEvolutionChain(url) {
     let chain_url = await getData(url);
     let evolve_chain_data = await getEvolutionChainData(chain_url.evolution_chain.url);
-
     let evolve_chain = [];
     let current = evolve_chain_data.chain;
 
@@ -121,8 +120,11 @@ async function getEvolutionChainData(url) {
 async function openPokemonDetailView(id) {
     let dialog = document.querySelector('dialog');
     let body = document.querySelector('body');
-    body.style.overflow = "hidden";
     await getPokemonDetails(id);
+    let typesImg = getPokemonType(currentPokemonCard);
+    let types = translatePokemonType(currentPokemonCard);
+    let chain = renderEvolutionChain(currentPokemonCard);
+    body.style.overflow = "hidden";
     dialog.innerHTML = /*html*/`
     <article class="pokemon_card background_color_${currentPokemonCard.type[0]}">
         <section class="pokemon_card_header">
@@ -149,10 +151,14 @@ async function openPokemonDetailView(id) {
             <div class="pokemon_card_content_stats_info"><label for="base_experience">Gewicht:</label><span id="base_experience">${currentPokemonCard.weight / 10} kg</span></div>
         </article>
          <article style="display: none" id="pokemon_card_content_types" class="pokemon_card_content_stats">
-            Test1
+            <figure class="pokemon_card_content_types_figures">
+                <div class="pokemon_card_content_types">${typesImg}</div>
+                <figcaption class="pokemon_card_content_types">${types}</figcaption>
+            </figure>
         </article>
         <article style="display: none" id="pokemon_card_content_chain" class="pokemon_card_content_stats">
-            Test2
+           <section>${chain}</section>
+           <section></section>
         </article>
          <article style="display: none" id="pokemon_card_content_more_stats" class="pokemon_card_content_stats">
             Test3
@@ -179,4 +185,28 @@ function showPokemonContentInfo(info) {
     hideAllPokemonContentInfo();
     let infoSideRef = document.getElementById(`pokemon_card_content_${info}`)
     infoSideRef.style.display = 'flex';
+}
+
+function translatePokemonType(currentPokemonCard) {
+    const pokemonTypes = ["grass","fire","water","bug","flying","normal","poison","electric","ground","fairy","fighting","psychic","rock","ghost","ice","dragon"];
+    const pokemonTypesGerman = ["Pflanze","Feuer","Wasser","Käfer","Flug","Normal","Gift","Elektro","Boden","Fee","Kampf","Psycho","Gestein","Geist","Eis","Drache"];
+    let typesTranslated = '';
+
+    for (let i = 0; i < currentPokemonCard.type.length; i++) {
+        const type = currentPokemonCard.type[i];
+        typesTranslated += /*html*/ `<h3 class="pokemon_card_content_types_translated">${pokemonTypesGerman[pokemonTypes.indexOf(type)]}</h3>`
+    }
+    return typesTranslated; 
+}
+
+function renderEvolutionChain(currentPokemonCard){
+    let chain = '';
+    for (let i = 0; i < currentPokemonCard.chain.length; i++) {
+        const pokemon = currentPokemonCard.chain[i];
+        chain += /*html*/ `
+        <span>${pokemon}</span>
+        `
+    }
+
+    return chain
 }
