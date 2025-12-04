@@ -3,10 +3,11 @@ let currentPokemonArray = [];
 let currentPokemonCard = {};
 
 async function init() {
+    toggleLoadingSpinner()
     includeHTML();
     await getPokemonOverviewData()
-    renderPokemonOverview()
-
+    await renderPokemonOverview()
+    toggleLoadingSpinner()
 }
 
 async function includeHTML() {
@@ -21,6 +22,11 @@ async function includeHTML() {
             element.innerHTML = 'Page not found';
         }
     }
+}
+
+function toggleLoadingSpinner(){
+    let spinner = document.getElementById('spinner');
+    spinner.classList.toggle('d-none')
 }
 
 async function getData(path = "") {
@@ -52,7 +58,7 @@ async function getPokemonOverviewData() {
 
 }
 
-function renderPokemonOverview() {
+async function renderPokemonOverview() {
     let pokemonRef = document.getElementById('pokemon_overview');
 
     for (let i = 0; i < currentPokemonArray.length; i++) {
@@ -88,7 +94,7 @@ async function getPokemonDetails(id) {
         chain: evolve_chain,
         cries: pokemon.cries.legacy,
         base_happiness: details.base_happiness,
-        caputre_rate: details.caputre_rate,
+        capture_rate: details.capture_rate,
     }
 
     console.log(currentPokemonCard);
@@ -123,61 +129,18 @@ async function openPokemonDetailView(id) {
     await getPokemonDetails(id);
     let typesImg = getPokemonType(currentPokemonCard);
     let types = translatePokemonType(currentPokemonCard);
-    let chain = renderEvolutionChain(currentPokemonCard);
+    let chain = await renderEvolutionChain(currentPokemonCard);
     body.style.overflow = "hidden";
-    dialog.innerHTML = /*html*/`
-    <article class="pokemon_card background_color_${currentPokemonCard.type[0]}">
-        <section class="pokemon_card_header">
-            <div class="pokemon_card_header_headline">
-                <h2>${currentPokemonCard.translated_name_de}</h2>
-                <span class="pokekom_card_header_id">#${id}</span>
-            </div>
-            <div class="pokekom_card_header_img">
-                <img src=${currentPokemonCard.img_url} alt="Bild eines Pokemons">
-            </div>
-        </section>
-        <section class="pokemon_card_navbar">
-            <nav>
-                <h4 onclick="showPokemonContentInfo('stats')">Stats</h4>
-                <h4 onclick="showPokemonContentInfo('types')">Typ</h4>
-                <h4 onclick="showPokemonContentInfo('chain')">Entwicklungen</h4>
-                <h4 onclick="showPokemonContentInfo('more_stats')">Mehr Infos</h4>
-            </nav>
-        </section>
-        <section class="pokemon_card_content">
-        <article id="pokemon_card_content_stats" class="pokemon_card_content_stats">
-            <div class="pokemon_card_content_stats_info"><label for="base_experience">Basis-Erfahrung:</label><span id="base_experience">${currentPokemonCard.base_experience} EXP</span></div>
-            <div class="pokemon_card_content_stats_info"><label for="base_experience">Größe:</label><span id="base_experience">${currentPokemonCard.height}0 cm</span></div>
-            <div class="pokemon_card_content_stats_info"><label for="base_experience">Gewicht:</label><span id="base_experience">${currentPokemonCard.weight / 10} kg</span></div>
-        </article>
-         <article style="display: none" id="pokemon_card_content_types" class="pokemon_card_content_stats">
-            <figure class="pokemon_card_content_types_figures">
-                <div class="pokemon_card_content_types">${typesImg}</div>
-                <figcaption class="pokemon_card_content_types">${types}</figcaption>
-            </figure>
-        </article>
-        <article style="display: none" id="pokemon_card_content_chain" class="pokemon_card_content_stats">
-           <section>${chain}</section>
-           <section></section>
-        </article>
-         <article style="display: none" id="pokemon_card_content_more_stats" class="pokemon_card_content_stats">
-            Test3
-        </article>
-        
-        </section>
-       
-    </article>
-    
-    `
+    dialog.innerHTML = getOpenPokemonDetailViewTemplate(currentPokemonCard.type[0], currentPokemonCard.translated_name_de, id, currentPokemonCard.img_url, currentPokemonCard.base_experience, currentPokemonCard.height, currentPokemonCard.weight, typesImg, types, chain, currentPokemonCard.base_happiness, currentPokemonCard.capture_rate, currentPokemonCard.cries);
     dialog.showModal();
 }
 
 function hideAllPokemonContentInfo() {
     let content_ids = ['pokemon_card_content_stats', 'pokemon_card_content_chain', 'pokemon_card_content_more_stats', 'pokemon_card_content_types']
     for (let i = 0; i < content_ids.length; i++) {
-         let id =  content_ids[i];
-         let idRef = document.getElementById(id);
-         idRef.style.display = 'none'; 
+        let id = content_ids[i];
+        let idRef = document.getElementById(id);
+        idRef.style.display = 'none';
     }
 }
 
@@ -188,25 +151,32 @@ function showPokemonContentInfo(info) {
 }
 
 function translatePokemonType(currentPokemonCard) {
-    const pokemonTypes = ["grass","fire","water","bug","flying","normal","poison","electric","ground","fairy","fighting","psychic","rock","ghost","ice","dragon"];
-    const pokemonTypesGerman = ["Pflanze","Feuer","Wasser","Käfer","Flug","Normal","Gift","Elektro","Boden","Fee","Kampf","Psycho","Gestein","Geist","Eis","Drache"];
+    const pokemonTypes = ["grass", "fire", "water", "bug", "flying", "normal", "poison", "electric", "ground", "fairy", "fighting", "psychic", "rock", "ghost", "ice", "dragon"];
+    const pokemonTypesGerman = ["Pflanze", "Feuer", "Wasser", "Käfer", "Flug", "Normal", "Gift", "Elektro", "Boden", "Fee", "Kampf", "Psycho", "Gestein", "Geist", "Eis", "Drache"];
     let typesTranslated = '';
 
     for (let i = 0; i < currentPokemonCard.type.length; i++) {
         const type = currentPokemonCard.type[i];
         typesTranslated += /*html*/ `<h3 class="pokemon_card_content_types_translated">${pokemonTypesGerman[pokemonTypes.indexOf(type)]}</h3>`
     }
-    return typesTranslated; 
+    return typesTranslated;
 }
 
-function renderEvolutionChain(currentPokemonCard){
+async function renderEvolutionChain(currentPokemonCard) {
     let chain = '';
     for (let i = 0; i < currentPokemonCard.chain.length; i++) {
         const pokemon = currentPokemonCard.chain[i];
-        chain += /*html*/ `
-        <span>${pokemon}</span>
-        `
-    }
+        let pokemonDetails = await getData(`/pokemon-species/${pokemon}`);
+        let pokemonImgData = await getData(`pokemon/${pokemon}`)
+        let germanPokemon = pokemonDetails.names.find(n => n.language.name === "de")?.name || pokemon.name;
+        let pokemonImgURL = pokemonImgData.sprites.other.dream_world.front_default;
 
+        chain += getRenderEvolutionChainTemplate(germanPokemon, pokemonImgURL)
+    }
     return chain
+}
+
+function playPokemonCry(cryUrl) {
+   audio = new Audio(cryUrl);
+   audio.play();
 }

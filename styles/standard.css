@@ -55,3 +55,7 @@ dialog[open]::backdrop {
 h2, h4 {
     margin: 0;
 }
+
+.d-none {
+    display: none; 
+}
