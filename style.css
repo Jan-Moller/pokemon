@@ -1,13 +1,13 @@
 .loader_section {
-    position: absolute;
-    top:0;
+    position: fixed;
+    top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1;
+    z-index: 9999;
     background-color: var(--primary-color);
 }
 
@@ -23,6 +23,7 @@
 .pokeball {
     height: 50px !important;
     width: 50px !important;
+    animation: spin 1s linear infinite; 
 }
 
 #pokemon_overview {
@@ -90,7 +91,6 @@
     transition: transform 1.2s;
     transform-style: preserve-3d;
     vertical-align: top;
-    cursor: pointer;
     perspective: 1000px;
 }
 
@@ -177,7 +177,6 @@
 .pokemon_card_navbar nav {
     display: flex;
     justify-content: space-evenly;
-    cursor: pointer;
     z-index: 10;
 }
 
@@ -246,5 +245,17 @@
 .pokemon_card_detailed_view_sound_symbol {
     height: 30px;
     width: 30px;
-    cursor: pointer;
 }
+
+.more_pokemon_btn {
+ margin: 25px;
+ height: 75px;
+ width: 250px;
+ color: white;
+ font-size: 24px;
+ font-family: 'Aldrich';
+ background-color: #E63950;
+ border: none;
+ cursor: url('/assets/img/pokeball_cursor.png'), pointer;
+}
+

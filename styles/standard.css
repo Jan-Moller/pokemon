@@ -16,15 +16,21 @@ body {
     margin: 0;
     color: white;
     font-family: 'Aldrich';
+    cursor: url('/assets/img/pokeball_cursor.png'), auto;
 }
 
 header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 100px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     background-color: var(--secondary-color);
+    z-index: 1;
 }
 
 .header_main {
@@ -40,6 +46,19 @@ header {
     width: 60px;
 }
 
+.header_search_section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+main {
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 dialog {
     padding: 0;
     border: 1px solid #dedfd2;
@@ -52,10 +71,11 @@ dialog[open]::backdrop {
     backdrop-filter: blur(5px);
 }
 
-h2, h4 {
+h2,
+h4 {
     margin: 0;
 }
 
 .d-none {
-    display: none; 
+    display: none;
 }

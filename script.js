@@ -1,13 +1,14 @@
 let BASE_URL = "https://pokeapi.co/api/v2/"
-let currentPokemonArray = [];
 let currentPokemonCard = {};
+let pokemonLimit = 10;
+let pokemonOffset = 0;
+
 
 async function init() {
-    toggleLoadingSpinner()
+    toggleLoadingSpinner();
     includeHTML();
-    await getPokemonOverviewData()
-    await renderPokemonOverview()
-    toggleLoadingSpinner()
+    await getPokemonOverviewData();
+    toggleLoadingSpinner();
 }
 
 async function includeHTML() {
@@ -24,7 +25,7 @@ async function includeHTML() {
     }
 }
 
-function toggleLoadingSpinner(){
+function toggleLoadingSpinner() {
     let spinner = document.getElementById('spinner');
     spinner.classList.toggle('d-none')
 }
@@ -37,28 +38,30 @@ async function getData(path = "") {
 }
 
 async function getPokemonOverviewData() {
-    let pokemons = await getData("/pokemon?limit=20&offset=0")
+    try {
+        let currentPokemonArray = [];
+        let pokemons = await getData(`/pokemon?limit=${pokemonLimit}&offset=${pokemonOffset}`)
+        for (let i = 0; i < pokemons.results.length; i++) {
+            const pokemon = pokemons.results[i];
+            let details = await getData(`/pokemon/${pokemon.name}`);
+            let german_name = await getData(`/pokemon-species/${details.species.name}`);
 
-    for (let i = 0; i < pokemons.results.length; i++) {
-        const pokemon = pokemons.results[i];
-        let details = await getData(`/pokemon/${pokemon.name}`);
-        let german_name = await getData(`/pokemon-species/${pokemon.name}`);
-
-        currentPokemonArray.push({
-            id: i + 1,
-            name: pokemon.name,
-            type: details.types.map(type => type.type.name),
-            img_url: details.sprites.other.dream_world.front_default,
-            height: details.height,
-            weight: details.weight,
-            base_experience: details.base_experience,
-            translated_name_de: german_name.names.find(n => n.language.name === "de")?.name || pokemon.name,
-        })
-    }
-
+            currentPokemonArray.push({
+                id: details.id,
+                name: pokemon.name,
+                type: details.types.map(type => type.type.name),
+                img_url: details.sprites.other.dream_world.front_default,
+                height: details.height,
+                weight: details.weight,
+                base_experience: details.base_experience,
+                translated_name_de: german_name.names.find(n => n.language.name === "de")?.name || pokemon.name,
+            })
+        }
+        await renderPokemonOverview(currentPokemonArray)
+    } catch (error) {error}
 }
 
-async function renderPokemonOverview() {
+async function renderPokemonOverview(currentPokemonArray) {
     let pokemonRef = document.getElementById('pokemon_overview');
 
     for (let i = 0; i < currentPokemonArray.length; i++) {
@@ -79,8 +82,8 @@ function getPokemonType(currentPokemon) {
 
 async function getPokemonDetails(id) {
     let pokemon = await getData(`pokemon/${id}`)
-    let details = await getData(`/pokemon-species/${pokemon.name}`);
-    let evolve_chain = await getEvolutionChain(`/pokemon-species/${pokemon.name}`);
+    let details = await getData(`/pokemon-species/${pokemon.species.name}`);
+    let evolve_chain = await getEvolutionChain(`/pokemon-species/${pokemon.species.name}`);
 
     currentPokemonCard = {
         id: id,
@@ -96,10 +99,6 @@ async function getPokemonDetails(id) {
         base_happiness: details.base_happiness,
         capture_rate: details.capture_rate,
     }
-
-    console.log(currentPokemonCard);
-
-
 }
 
 async function getEvolutionChain(url) {
@@ -177,6 +176,51 @@ async function renderEvolutionChain(currentPokemonCard) {
 }
 
 function playPokemonCry(cryUrl) {
-   audio = new Audio(cryUrl);
-   audio.play();
+    audio = new Audio(cryUrl);
+    audio.play();
 }
+
+function searchForPokemon(event) {
+    if (event.key === 'Enter') {
+        let searchItem = document.getElementById('search_pokemon').value;
+        let searchResult = pokemonAll.filter(pokemon => pokemon.translated_name_de && pokemon.translated_name_de.includes(searchItem));
+        console.log(searchResult);
+        getPokemonSearchResult(searchResult);
+    }
+}
+
+async function getPokemonSearchResult(searchResult) {
+    toggleLoadingSpinner();
+    pokemonOffset = 0; 
+    let pokemonRef = document.getElementById('pokemon_overview');
+    pokemonRef.innerHTML = '';
+    let currentPokemonArray = [];
+
+    for (let i = 0; i < searchResult.length; i++) {
+        const pokemon = searchResult[i];
+        let pokemonDetails = await getData(`/pokemon/${pokemon.name}`);
+        let german_name = await getData(`/pokemon-species/${pokemonDetails.species.name}`);
+
+        currentPokemonArray.push({
+            id: pokemonDetails.id,
+            name: pokemon.en_language,
+            type: pokemonDetails.types.map(type => type.type.name),
+            img_url: pokemonDetails.sprites.other.dream_world.front_default,
+            height: pokemonDetails.height,
+            weight: pokemonDetails.weight,
+            base_experience: pokemonDetails.base_experience,
+            translated_name_de: german_name.names.find(n => n.language.name === "de")?.name || pokemon.name,
+        })
+    }
+    await renderPokemonOverview(currentPokemonArray);
+    toggleLoadingSpinner()
+}
+
+async function loadMorePokemon() {
+    toggleLoadingSpinner();
+    let newPokemonOffset = pokemonOffset + 10;
+    pokemonOffset = newPokemonOffset;
+    await getPokemonOverviewData();
+    toggleLoadingSpinner();
+}
+
