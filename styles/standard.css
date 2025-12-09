@@ -76,6 +76,17 @@ h4 {
     margin: 0;
 }
 
+input, input::placeholder {
+    font-family: 'Aldrich';
+    border: none;
+}
+
+input:focus {
+    border: none; 
+    outline: none;
+}
+
+
 .d-none {
     display: none;
 }

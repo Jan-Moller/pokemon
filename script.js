@@ -6,6 +6,7 @@ let pokemonOffset = 0;
 
 async function init() {
     toggleLoadingSpinner();
+    closeDialogListener();
     includeHTML();
     await getPokemonOverviewData();
     toggleLoadingSpinner();
@@ -58,7 +59,7 @@ async function getPokemonOverviewData() {
             })
         }
         await renderPokemonOverview(currentPokemonArray)
-    } catch (error) {error}
+    } catch (error) { error }
 }
 
 async function renderPokemonOverview(currentPokemonArray) {
@@ -180,18 +181,30 @@ function playPokemonCry(cryUrl) {
     audio.play();
 }
 
-function searchForPokemon(event) {
+async function searchForPokemon(event) {
     if (event.key === 'Enter') {
-        let searchItem = document.getElementById('search_pokemon').value;
-        let searchResult = pokemonAll.filter(pokemon => pokemon.translated_name_de && pokemon.translated_name_de.includes(searchItem));
-        console.log(searchResult);
-        getPokemonSearchResult(searchResult);
+        let searchItem = document.getElementById('search_pokemon').value.trim().toLowerCase();
+        if (searchItem == '') {
+            resetSearchValue()
+        }
+        else {
+            let searchResult = pokemonAll.filter(pokemon => pokemon.translated_name_de && pokemon.translated_name_de.toLowerCase().includes(searchItem));
+            pokemonOffset = -10;
+            getPokemonSearchResult(searchResult);
+        }
     }
+}
+
+async function resetSearchValue() {
+    toggleLoadingSpinner();
+    document.getElementById('pokemon_overview').innerHTML = '';
+    pokemonOffset = 0;
+    await getPokemonOverviewData()
+    toggleLoadingSpinner();
 }
 
 async function getPokemonSearchResult(searchResult) {
     toggleLoadingSpinner();
-    pokemonOffset = 0; 
     let pokemonRef = document.getElementById('pokemon_overview');
     pokemonRef.innerHTML = '';
     let currentPokemonArray = [];
@@ -224,3 +237,38 @@ async function loadMorePokemon() {
     toggleLoadingSpinner();
 }
 
+async function showNextPokemon(id) {
+    let nextPokemonId = id + 1;
+    await openPokemonDetailView(nextPokemonId);
+}
+
+async function showPreviousPokemon(id) {
+    let nextPokemonId = id - 1;
+    if (nextPokemonId < 1) {
+        let dialogRef = document.querySelector('dialog');
+        dialogRef.close();
+    }
+    else {
+        await openPokemonDetailView(nextPokemonId);
+    }
+}
+
+document.addEventListener('keydown', function (event) {
+    const dialog = document.querySelector('dialog');
+    if (event.key === 'Escape' && dialog.open) {
+        dialog.close();
+        document.body.style.overflow = '';
+    }
+});
+
+function closeDialogListener() {
+    const dialog = document.querySelector('dialog');
+    if (dialog) {
+        dialog.addEventListener('click', function (event) {
+            if (event.target === dialog) {
+                dialog.close();
+                document.body.style.overflow = '';
+            }
+        });
+    }
+}

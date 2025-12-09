@@ -11,19 +11,24 @@
     background-color: var(--primary-color);
 }
 
-.loader{
-    animation: spin 1s linear infinite; 
+.loader {
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    0% {transform: rotate(0);}
-    100% {transform: rotate(360deg);}
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .pokeball {
     height: 50px !important;
     width: 50px !important;
-    animation: spin 1s linear infinite; 
+    animation: spin 1s linear infinite;
 }
 
 #pokemon_overview {
@@ -124,6 +129,7 @@
 }
 
 .pokemon_card_header {
+    position: relative;
     height: 300px;
     display: flex;
     flex-direction: column;
@@ -248,14 +254,46 @@
 }
 
 .more_pokemon_btn {
- margin: 25px;
- height: 75px;
- width: 250px;
- color: white;
- font-size: 24px;
- font-family: 'Aldrich';
- background-color: #E63950;
- border: none;
- cursor: url('/assets/img/pokeball_cursor.png'), pointer;
+    margin: 25px;
+    height: 75px;
+    width: 250px;
+    color: white;
+    font-size: 24px;
+    font-family: 'Aldrich';
+    background-color: #E63950;
+    border: none;
+    cursor: url('/assets/img/pokeball_cursor.png'), pointer;
+}
+
+.pokemon-next-btn {
+    height: 30px !important;
+    width: 30px !important;
+    position: absolute;
+    top: 50%;
+    right: 0;
+}
+
+.pokemon-next-btn:hover {
+    height: 30px !important;
+    width: 30px !important;
+    filter: drop-shadow(0 8px 32px rgba(255, 255, 255));
+    transition: none !important;
+    transform: none !important;
+}
+
+.pokemon-previously-btn {
+    height: 30px !important;
+    width: 30px !important;
+    position: absolute;
+    top: 50%;
+    left: 0;
+}
+
+.pokemon-previously-btn:hover {
+    height: 30px !important;
+    width: 30px !important;
+    filter: drop-shadow(0 8px 32px rgba(255, 255, 255));
+    transition: none !important;
+    transform: none !important;
 }
 

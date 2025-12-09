@@ -1,0 +1,19 @@
+@media (max-width: 600px) {
+    .header_main h1 {
+        display: none;
+    }
+}
+
+@media (max-width: 425px) {
+input {
+    width: 100px;
+}
+
+.pokemon_card_navbar h4 {
+    font-size: 13px;
+}
+
+.pokemon_card_content_stats_info {
+    font-size: 14px;
+}
+}

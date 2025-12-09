@@ -24,6 +24,8 @@ function getOpenPokemonDetailViewTemplate(type, german_name, id, imgUrl, base_ex
     return /*html*/`
     <article class="pokemon_card background_color_${type}">
         <section class="pokemon_card_header">
+            <img class="pokemon-next-btn" src="/assets/img/next.png" alt="Weiter Button" onclick="showNextPokemon(${id})">
+            <img class="pokemon-previously-btn" src="/assets/img/prev_button.png" alt="Vorher Button" onclick="showPreviousPokemon(${id})">
             <div class="pokemon_card_header_headline">
                 <h2>${german_name}</h2>
                 <span class="pokekom_card_header_id">#${id}</span>
